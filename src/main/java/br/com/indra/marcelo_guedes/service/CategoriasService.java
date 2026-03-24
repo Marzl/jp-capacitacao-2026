@@ -25,6 +25,15 @@ public class CategoriasService {
         return categoriasRepository.save(categoria);
     }
 
+    public List<Categorias> listarCategorias() {
+        return categoriasRepository.findAll();
+    }
+
+    public Categorias buscarCategoria(Long id) {
+        return categoriasRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+    }
+
     public Categorias atualizarCategoria(Long id, Categorias categoriaAtualizada) {
 
         Categorias categoriaExistente = categoriasRepository.findById(id)
@@ -46,15 +55,6 @@ public class CategoriasService {
         categoriaExistente.setCategoriaPai(categoriaAtualizada.getCategoriaPai());
 
         return categoriasRepository.save(categoriaExistente);
-    }
-
-    public List<Categorias> listarCategorias() {
-        return categoriasRepository.findAll();
-    }
-
-    public Categorias buscarCategoria(Long id) {
-        return categoriasRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
     }
 
     public void deletarCategoria(Long id) {

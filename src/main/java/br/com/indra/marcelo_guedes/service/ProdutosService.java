@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,27 +17,23 @@ public class ProdutosService {
     private final ProdutosRepository produtosRepository;
     private final HistoricoPrecoRepository historicoPrecoRepository;
 
-    public List<Produtos> getAll() {
+    public Produtos criarProduto(Produtos produto) {
+        return produtosRepository.save(produto);
+    }
+
+    public List<Produtos> listarProdutos() {
         return produtosRepository.findAll();
     }
 
-    public Produtos createdProduto(Produtos produto) {
-        return produtosRepository.save(produto);
-    }
-
-    public Produtos atualiza(Produtos produto) {
-        return produtosRepository.save(produto);
-    }
-
-    public void deletarProduto(Long id) {
-        produtosRepository.deleteById(id);
-    }
-
-    public Produtos getById(Long id) {
+    public Produtos buscarProduto(Long id) {
         return produtosRepository.findById(id).get();
     }
 
-    public Produtos atualizaPreco(Long id, BigDecimal preco) {
+    public Produtos atualizarProdutos(Produtos produto) {
+        return produtosRepository.save(produto);
+    }
+
+    public Produtos atualizarPreco(Long id, BigDecimal preco) {
 //        Produtos produto = produtosRepository.findById(id).get();
         final var produto = produtosRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -78,5 +72,10 @@ public class ProdutosService {
          */
 //        return produto;
     }
+
+    public void deletarProduto(Long id) {
+        produtosRepository.deleteById(id);
+    }
+
 }
 
