@@ -2,6 +2,7 @@ package br.com.indra.marcelo_guedes.service;
 
 import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.repository.CategoriasRepository;
+import br.com.indra.marcelo_guedes.service.dto.CategoriasRequestDTO;
 import br.com.indra.marcelo_guedes.service.dto.CategoriasResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,17 +15,30 @@ public class CategoriasService {
 
     private final CategoriasRepository categoriasRepository;
 
-    public Categorias criarCategoria(Categorias categoria){
+    public CategoriasResponseDTO criarCategoria(CategoriasRequestDTO dto) {
 
-        if (categoria.getNome() == null || categoria.getNome().isBlank()) {
+        if (dto.getNome() == null || dto.getNome().isBlank()) {
             throw new RuntimeException("Nome da categoria é obrigatório");
         }
 
-        if (categoriasRepository.existsByNomeAndCategoriaPai(categoria.getNome(), categoria.getCategoriaPai())) {
+        Categorias categoriaPai = null;
+
+        if (dto.getCategoriaPaiId() != null) {
+            categoriaPai = categoriasRepository.findById(dto.getCategoriaPaiId())
+                    .orElseThrow(() -> new RuntimeException("Categoria pai não encontrada"));
+        }
+
+        if (categoriasRepository.existsByNomeAndCategoriaPai(dto.getNome(), categoriaPai)) {
             throw new RuntimeException("já existe uma categoria com esse nome dentro da mesma categoria pai");
         }
 
-        return categoriasRepository.save(categoria);
+        Categorias categoria = new Categorias();
+        categoria.setNome(dto.getNome());
+        categoria.setCategoriaPai(categoriaPai);
+
+        Categorias categoriaSalva = categoriasRepository.save(categoria);
+
+        return toResponseDTO(categoriaSalva);
     }
 
     public List<CategoriasResponseDTO> listarCategorias() {
@@ -42,27 +56,36 @@ public class CategoriasService {
         return toResponseDTO(categoria);
     }
 
-    public Categorias atualizarCategoria(Long id, Categorias categoriaAtualizada) {
+    public CategoriasResponseDTO atualizarCategoria(Long id, CategoriasRequestDTO dto) {
 
         Categorias categoriaExistente = categoriasRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
 
-        if (categoriaAtualizada.getNome() == null || categoriaAtualizada.getNome().isBlank()) {
+        if (dto.getNome() == null || dto.getNome().isBlank()) {
             throw new RuntimeException("Nome da categoria é obrigatório");
         }
 
+        Categorias categoriaPai = null;
+
+        if (dto.getCategoriaPaiId() != null) {
+            categoriaPai = categoriasRepository.findById(dto.getCategoriaPaiId())
+                    .orElseThrow(() -> new RuntimeException("Categoria pai não encontrada"));
+        }
+
         if (categoriasRepository.existsByNomeAndCategoriaPaiAndIdNot(
-                categoriaAtualizada.getNome(),
-                categoriaAtualizada.getCategoriaPai(),
+                dto.getNome(),
+                categoriaPai,
                 id
         )) {
             throw new RuntimeException("Já existe uma categoria com esse nome na mesma categoria pai");
         }
 
-        categoriaExistente.setNome(categoriaAtualizada.getNome());
-        categoriaExistente.setCategoriaPai(categoriaAtualizada.getCategoriaPai());
+        categoriaExistente.setNome(dto.getNome());
+        categoriaExistente.setCategoriaPai(categoriaPai);
 
-        return categoriasRepository.save(categoriaExistente);
+        Categorias categoriaAtualizada = categoriasRepository.save(categoriaExistente);
+
+        return toResponseDTO(categoriaAtualizada);
     }
 
     public void deletarCategoria(Long id) {

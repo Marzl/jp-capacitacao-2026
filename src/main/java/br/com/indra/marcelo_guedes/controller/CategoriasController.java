@@ -1,7 +1,7 @@
 package br.com.indra.marcelo_guedes.controller;
 
-import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.service.CategoriasService;
+import br.com.indra.marcelo_guedes.service.dto.CategoriasRequestDTO;
 import br.com.indra.marcelo_guedes.service.dto.CategoriasResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,8 +22,8 @@ public class CategoriasController {
     @Operation(description = "Endpoint para criar uma nova Categoria",
             summary = "Criação de Categoria")
     @PostMapping()
-    public ResponseEntity<Categorias> criarCategoria(@RequestBody Categorias categoria) {
-        return ResponseEntity.ok(categoriasService.criarCategoria(categoria));
+    public ResponseEntity<CategoriasResponseDTO> criarCategoria(@RequestBody CategoriasRequestDTO dto) {
+        return ResponseEntity.ok(categoriasService.criarCategoria(dto));
     }
 
     @Operation(description = "Endpoint para listar todas as Categorias",
@@ -43,9 +43,9 @@ public class CategoriasController {
     @Operation(description = "Endpoint para atualizar uma Categoria",
             summary = "Atualizar Categoria")
     @PutMapping("/{id}")
-    public ResponseEntity<Categorias> atualizarCategoria(@PathVariable Long id,
-                                                         @RequestBody Categorias categoriaAtualizada){
-        return ResponseEntity.ok(categoriasService.atualizarCategoria(id, categoriaAtualizada));
+    public ResponseEntity<CategoriasResponseDTO> atualizarCategoria(@PathVariable Long id,
+                                                         @RequestBody CategoriasRequestDTO dto){
+        return ResponseEntity.ok(categoriasService.atualizarCategoria(id, dto));
     }
 
     @Operation(description = "Endpoint para deletar uma Categoria",
