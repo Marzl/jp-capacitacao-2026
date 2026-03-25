@@ -2,6 +2,7 @@ package br.com.indra.marcelo_guedes.controller;
 
 import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.service.CategoriasService;
+import br.com.indra.marcelo_guedes.service.dto.CategoriasResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +29,14 @@ public class CategoriasController {
     @Operation(description = "Endpoint para listar todas as Categorias",
             summary = "Listar Categorias")
     @GetMapping
-    public ResponseEntity<List<Categorias>> listarCategorias() {
+    public ResponseEntity<List<CategoriasResponseDTO>> listarCategorias() {
         return ResponseEntity.ok(categoriasService.listarCategorias());
     }
 
     @Operation(description = "Endpoint para buscar Categoria por Id",
             summary = "Buscar Categoria por Id")
     @GetMapping("/{id}")
-    public ResponseEntity<Categorias> buscarCategoria(@PathVariable Long id){
+    public ResponseEntity<CategoriasResponseDTO> buscarCategoria(@PathVariable Long id){
         return ResponseEntity.ok(categoriasService.buscarCategoria(id));
     }
 

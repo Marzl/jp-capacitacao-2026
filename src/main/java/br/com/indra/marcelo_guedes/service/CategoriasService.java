@@ -2,6 +2,7 @@ package br.com.indra.marcelo_guedes.service;
 
 import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.repository.CategoriasRepository;
+import br.com.indra.marcelo_guedes.service.dto.CategoriasResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ public class CategoriasService {
     private final CategoriasRepository categoriasRepository;
 
     public Categorias criarCategoria(Categorias categoria){
+
         if (categoria.getNome() == null || categoria.getNome().isBlank()) {
             throw new RuntimeException("Nome da categoria é obrigatório");
         }
@@ -25,13 +27,19 @@ public class CategoriasService {
         return categoriasRepository.save(categoria);
     }
 
-    public List<Categorias> listarCategorias() {
-        return categoriasRepository.findAll();
+    public List<CategoriasResponseDTO> listarCategorias() {
+        return categoriasRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
-    public Categorias buscarCategoria(Long id) {
-        return categoriasRepository.findById(id)
+    public CategoriasResponseDTO buscarCategoria(Long id) {
+
+        Categorias categoria = categoriasRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+
+        return toResponseDTO(categoria);
     }
 
     public Categorias atualizarCategoria(Long id, Categorias categoriaAtualizada) {
@@ -58,6 +66,7 @@ public class CategoriasService {
     }
 
     public void deletarCategoria(Long id) {
+
         if (categoriasRepository.existsById(id) == false) {
             throw new RuntimeException("Categoria não encontrada");
         }
@@ -65,4 +74,22 @@ public class CategoriasService {
         categoriasRepository.deleteById(id);
     }
 
+    private CategoriasResponseDTO toResponseDTO(Categorias categoria){
+
+        Long categoriaPaiId = null;
+        String categoriaPaiNome = null;
+
+        if (categoria.getCategoriaPai() != null) {
+            categoriaPaiId = categoria.getCategoriaPai().getId();
+            categoriaPaiNome = categoria.getCategoriaPai().getNome();
+        }
+
+        return CategoriasResponseDTO.builder()
+                .id(categoria.getId())
+                .nome(categoria.getNome())
+                .categoriaPaiId(categoriaPaiId)
+                .categoriaPaiNome(categoriaPaiNome)
+                .build();
+
+    }
 }
