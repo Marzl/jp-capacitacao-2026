@@ -1,5 +1,7 @@
 package br.com.indra.marcelo_guedes.service;
 
+import br.com.indra.marcelo_guedes.exceptions.BusinessException;
+import br.com.indra.marcelo_guedes.exceptions.ResourceNotFoundException;
 import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.repository.CategoriasRepository;
 import br.com.indra.marcelo_guedes.service.dto.CategoriasRequestDTO;
@@ -25,11 +27,11 @@ public class CategoriasService {
 
         if (dto.getCategoriaPaiId() != null) {
             categoriaPai = categoriasRepository.findById(dto.getCategoriaPaiId())
-                    .orElseThrow(() -> new RuntimeException("Categoria pai não encontrada"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria pai não encontrada"));
         }
 
         if (categoriasRepository.existsByNomeAndCategoriaPai(dto.getNome(), categoriaPai)) {
-            throw new RuntimeException("já existe uma categoria com esse nome dentro da mesma categoria pai");
+            throw new BusinessException("já existe uma categoria com esse nome dentro da mesma categoria pai");
         }
 
         Categorias categoria = new Categorias();
@@ -51,7 +53,7 @@ public class CategoriasService {
     public CategoriasResponseDTO buscarCategoria(Long id) {
 
         Categorias categoria = categoriasRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
         return toResponseDTO(categoria);
     }
@@ -59,7 +61,7 @@ public class CategoriasService {
     public CategoriasResponseDTO atualizarCategoria(Long id, CategoriasRequestDTO dto) {
 
         Categorias categoriaExistente = categoriasRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
         if (dto.getNome() == null || dto.getNome().isBlank()) {
             throw new RuntimeException("Nome da categoria é obrigatório");
@@ -69,7 +71,7 @@ public class CategoriasService {
 
         if (dto.getCategoriaPaiId() != null) {
             categoriaPai = categoriasRepository.findById(dto.getCategoriaPaiId())
-                    .orElseThrow(() -> new RuntimeException("Categoria pai não encontrada"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria pai não encontrada"));
         }
 
         if (categoriasRepository.existsByNomeAndCategoriaPaiAndIdNot(
@@ -77,7 +79,7 @@ public class CategoriasService {
                 categoriaPai,
                 id
         )) {
-            throw new RuntimeException("Já existe uma categoria com esse nome na mesma categoria pai");
+            throw new BusinessException("Já existe uma categoria com esse nome na mesma categoria pai");
         }
 
         categoriaExistente.setNome(dto.getNome());
@@ -91,7 +93,7 @@ public class CategoriasService {
     public void deletarCategoria(Long id) {
 
         if (categoriasRepository.existsById(id) == false) {
-            throw new RuntimeException("Categoria não encontrada");
+            throw new ResourceNotFoundException("Categoria não encontrada");
         }
 
         categoriasRepository.deleteById(id);

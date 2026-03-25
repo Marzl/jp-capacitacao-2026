@@ -1,5 +1,6 @@
 package br.com.indra.marcelo_guedes.service;
 
+import br.com.indra.marcelo_guedes.exceptions.ResourceNotFoundException;
 import br.com.indra.marcelo_guedes.model.HistoricoPreco;
 import br.com.indra.marcelo_guedes.model.Produtos;
 import br.com.indra.marcelo_guedes.repository.HistoricoPrecoRepository;
@@ -36,7 +37,7 @@ public class ProdutosService {
     public Produtos atualizarPreco(Long id, BigDecimal preco) {
 //        Produtos produto = produtosRepository.findById(id).get();
         final var produto = produtosRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
         produto.setPreco(preco);
         /***
          * Rastreabilidade
