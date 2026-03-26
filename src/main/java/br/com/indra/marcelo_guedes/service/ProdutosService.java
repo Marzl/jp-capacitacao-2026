@@ -1,8 +1,11 @@
 package br.com.indra.marcelo_guedes.service;
 
+import br.com.indra.marcelo_guedes.exceptions.BusinessException;
 import br.com.indra.marcelo_guedes.exceptions.ResourceNotFoundException;
+import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.model.HistoricoPreco;
 import br.com.indra.marcelo_guedes.model.Produtos;
+import br.com.indra.marcelo_guedes.repository.CategoriasRepository;
 import br.com.indra.marcelo_guedes.repository.HistoricoPrecoRepository;
 import br.com.indra.marcelo_guedes.repository.ProdutosRepository;
 import br.com.indra.marcelo_guedes.service.dto.ProdutosRequestDTO;
@@ -19,10 +22,29 @@ public class ProdutosService {
 
     private final ProdutosRepository produtosRepository;
     private final HistoricoPrecoRepository historicoPrecoRepository;
+    private final CategoriasRepository categoriasRepository;
 
     public ProdutosResponseDTO criarProduto(ProdutosRequestDTO dto) {
 
-        Produtos produtoSalvo = produtosRepository.save(dto);
+        if(dto.getNome() == null || dto.getNome().isBlank()){
+            throw new BusinessException("o nome do produto é obrigatório");
+        }
+
+        if(dto.getPreco() == null) {
+            throw new BusinessException("o preço do produto é obrigatório");
+        }
+
+        Categorias categoriaId = categoriasRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria nao encontrada"));
+
+        Produtos produto = new Produtos();
+        produto.setNome(dto.getNome());
+        produto.setDescricao(dto.getDescricao());
+        produto.setPreco(dto.getPreco());
+        produto.setCodigoBarras(dto.getCodigoBarras());
+        produto.setCategoria(categoriaId);
+
+        Produtos produtoSalvo = produtosRepository.save(produto);
 
         return toResponseDTO(produtoSalvo);
     }
@@ -41,9 +63,33 @@ public class ProdutosService {
         return toResponseDTO(produtoBuscado);
     }
 
-    public ProdutosResponseDTO atualizarProdutos(ProdutosRequestDTO dto) {
+    public ProdutosResponseDTO atualizarProduto(Long id, ProdutosRequestDTO dto) {
 
-        Produtos produtoAtualizado = produtosRepository.save(dto);
+        Produtos produtoExiste = produtosRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+
+        if(dto.getNome() == null || dto.getNome().isBlank()){
+            throw new BusinessException("o nome do produto é obrigatório");
+        }
+
+        if(dto.getPreco() == null) {
+            throw new BusinessException("o preço do produto é obrigatório");
+        }
+
+        if(dto.getCategoriaId() == null) {
+            throw new BusinessException("a categoria do produto é obrigatória");
+        }
+
+        Categorias categoriaExiste = categoriasRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+        produtoExiste.setNome(dto.getNome());
+        produtoExiste.setDescricao(dto.getDescricao());
+        produtoExiste.setPreco(dto.getPreco());
+        produtoExiste.setCodigoBarras(dto.getCodigoBarras());
+        produtoExiste.setCategoria(categoriaExiste);
+
+        Produtos produtoAtualizado = produtosRepository.save(produtoExiste);
 
         return toResponseDTO(produtoAtualizado);
     }

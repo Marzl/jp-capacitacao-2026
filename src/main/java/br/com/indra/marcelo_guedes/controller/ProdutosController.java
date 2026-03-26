@@ -1,6 +1,5 @@
 package br.com.indra.marcelo_guedes.controller;
 
-import br.com.indra.marcelo_guedes.model.Produtos;
 import br.com.indra.marcelo_guedes.service.ProdutosService;
 import br.com.indra.marcelo_guedes.service.dto.ProdutosRequestDTO;
 import br.com.indra.marcelo_guedes.service.dto.ProdutosResponseDTO;
@@ -67,7 +66,7 @@ public class ProdutosController {
     @PutMapping("/atualizar")
     public ResponseEntity<ProdutosResponseDTO> atualizarProduto(@RequestParam Long id,
                                                      @RequestBody ProdutosRequestDTO dto){
-        return ResponseEntity.ok(produtosService.atualizarProdutos(dto));
+        return ResponseEntity.ok(produtosService.atualizarProduto(id, dto));
     }
 
     @PatchMapping("/atualiza-preco/{id}")
