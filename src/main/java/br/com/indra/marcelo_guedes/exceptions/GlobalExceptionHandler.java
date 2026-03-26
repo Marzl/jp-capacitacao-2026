@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
 
         ErrorResponse error = new ErrorResponse(
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
 
         ErrorResponse error = new ErrorResponse(
