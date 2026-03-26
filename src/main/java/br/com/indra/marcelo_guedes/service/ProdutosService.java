@@ -34,6 +34,10 @@ public class ProdutosService {
             throw new BusinessException("o preço do produto é obrigatório");
         }
 
+        if(dto.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("o preço nao pode ser menor que 0");
+        }
+
         Categorias categoriaId = categoriasRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria nao encontrada"));
 
@@ -76,6 +80,10 @@ public class ProdutosService {
             throw new BusinessException("o preço do produto é obrigatório");
         }
 
+        if(dto.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("o preço nao pode ser menor que 0");
+        }
+
         if(dto.getCategoriaId() == null) {
             throw new BusinessException("a categoria do produto é obrigatória");
         }
@@ -95,43 +103,35 @@ public class ProdutosService {
     }
 
     public ProdutosResponseDTO atualizarPreco(Long id, BigDecimal preco) {
-//        Produtos produto = produtosRepository.findById(id).get();
-        final var produto = produtosRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-        produto.setPreco(preco);
-        /***
-         * Rastreabilidade
-         * 1 - Criar um log
-         * 2 - Adicionar em tabela historico de preços valores old e new
-         * para cada produto atualizado
-         * 3 - Antes de atualizar a tabela de produto, pegar o valor atual da tabela e adiconar
-         * na tabela historico
-         * 4 - Pegar novo valor da tabela e adicionar na tabela historico
-         * 5 - Sempre na tabela, adicionar novo registro após atualizar tabela de produto
-         * Estrutura da tabela historico de preços
-         * id
-         * id_produto
-         * preco_antigo
-         * preco_novo
-         * data_alteracao
-         */
-        final var historico = new HistoricoPreco();
-        historico.setPrecoAntigo(produto.getPreco());
-        historico.setProdutos(produto);
-        historico.setPrecoNovo(preco);
-        //Código abaixo pode ser substituido por @CreationTimestamp
-//        historico.setDataAlteracao(LocalDateTime.now());
-        historicoPrecoRepository.save(historico);
-        return produtosRepository.saveAndFlush(produto);
 
-        //Exemplo de não se fazer por gerar retrabalho
-//        final var historicoNovo = historicoPrecoRepository.findById(historico.getId()).get();
-//        historicoNovo.setPrecoNovo(preco);
-//        historicoPrecoRepository.save(historicoNovo);
-        /**
-         * get na tabela produtos para novo preço
-         */
-//        return produto;
+        Produtos produto = produtosRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+
+        if(preco == null) {
+            throw new BusinessException("o preço do produto é obrigatório");
+        }
+
+        if(preco.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("o preço deve ser maior que zero");
+        }
+
+        BigDecimal precoAntigo = produto.getPreco();
+
+        if(precoAntigo.compareTo(preco) == 0) {
+            throw new BusinessException("o novo preço deve ser diferente do preço atual");
+        }
+
+        produto.setPreco(preco);
+
+        HistoricoPreco historico = new HistoricoPreco();
+        historico.setPrecoAntigo(precoAntigo);
+        historico.setProduto(produto);
+        historico.setPrecoNovo(preco);
+
+        Produtos produtoAtualizado = produtosRepository.save(produto);
+        historicoPrecoRepository.save(historico);
+
+        return toResponseDTO(produtoAtualizado);
     }
 
     public void deletarProduto(Long id) {
