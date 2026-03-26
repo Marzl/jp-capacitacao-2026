@@ -16,7 +16,7 @@ public class HistoricoPrecoService {
 
     public List<HistoricoPrecoResponseDTO> listarHistoricoPreco(Long produtoId) {
 
-        List<HistoricoPreco> historicoPrecos = historicoPrecoRepository.findByProdutosId(produtoId);
+        List<HistoricoPreco> historicoPrecos = historicoPrecoRepository.findByProdutoId(produtoId);
 
         return historicoPrecos
                 .stream()
