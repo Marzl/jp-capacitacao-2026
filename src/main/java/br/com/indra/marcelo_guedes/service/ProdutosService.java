@@ -5,6 +5,8 @@ import br.com.indra.marcelo_guedes.model.HistoricoPreco;
 import br.com.indra.marcelo_guedes.model.Produtos;
 import br.com.indra.marcelo_guedes.repository.HistoricoPrecoRepository;
 import br.com.indra.marcelo_guedes.repository.ProdutosRepository;
+import br.com.indra.marcelo_guedes.service.dto.ProdutosRequestDTO;
+import br.com.indra.marcelo_guedes.service.dto.ProdutosResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,23 +20,35 @@ public class ProdutosService {
     private final ProdutosRepository produtosRepository;
     private final HistoricoPrecoRepository historicoPrecoRepository;
 
-    public Produtos criarProduto(Produtos produto) {
-        return produtosRepository.save(produto);
+    public ProdutosResponseDTO criarProduto(ProdutosRequestDTO dto) {
+
+        Produtos produtoSalvo = produtosRepository.save(dto);
+
+        return toResponseDTO(produtoSalvo);
     }
 
-    public List<Produtos> listarProdutos() {
-        return produtosRepository.findAll();
+    public List<ProdutosResponseDTO> listarProdutos() {
+        return produtosRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
-    public Produtos buscarProduto(Long id) {
-        return produtosRepository.findById(id).get();
+    public ProdutosResponseDTO buscarProduto(Long id) {
+        Produtos produtoBuscado = produtosRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+
+        return toResponseDTO(produtoBuscado);
     }
 
-    public Produtos atualizarProdutos(Produtos produto) {
-        return produtosRepository.save(produto);
+    public ProdutosResponseDTO atualizarProdutos(ProdutosRequestDTO dto) {
+
+        Produtos produtoAtualizado = produtosRepository.save(dto);
+
+        return toResponseDTO(produtoAtualizado);
     }
 
-    public Produtos atualizarPreco(Long id, BigDecimal preco) {
+    public ProdutosResponseDTO atualizarPreco(Long id, BigDecimal preco) {
 //        Produtos produto = produtosRepository.findById(id).get();
         final var produto = produtosRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
@@ -76,6 +90,19 @@ public class ProdutosService {
 
     public void deletarProduto(Long id) {
         produtosRepository.deleteById(id);
+    }
+
+    private ProdutosResponseDTO toResponseDTO(Produtos produto) {
+
+        return ProdutosResponseDTO.builder()
+                .id(produto.getId())
+                .nome(produto.getNome())
+                .descricao(produto.getDescricao())
+                .preco(produto.getPreco())
+                .codigoBarras(produto.getCodigoBarras())
+                .categoriaId(produto.getCategoria().getId())
+                .categoriaNome(produto.getCategoria().getNome())
+                .build();
     }
 
 }

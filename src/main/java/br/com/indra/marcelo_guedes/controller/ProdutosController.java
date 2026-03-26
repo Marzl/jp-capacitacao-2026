@@ -2,6 +2,8 @@ package br.com.indra.marcelo_guedes.controller;
 
 import br.com.indra.marcelo_guedes.model.Produtos;
 import br.com.indra.marcelo_guedes.service.ProdutosService;
+import br.com.indra.marcelo_guedes.service.dto.ProdutosRequestDTO;
+import br.com.indra.marcelo_guedes.service.dto.ProdutosResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +39,8 @@ public class ProdutosController {
     @Operation(description = "Endpoint para criar um novo produto",
             summary = "Criação de produto")
     @PostMapping("/cria")
-    public ResponseEntity<Produtos> criarProduto(@RequestBody Produtos produto){
-        return ResponseEntity.ok(produtosService.criarProduto(produto));
+    public ResponseEntity<ProdutosResponseDTO> criarProduto(@RequestBody ProdutosRequestDTO dto){
+        return ResponseEntity.ok(produtosService.criarProduto(dto));
     }
 
     /**
@@ -47,7 +49,7 @@ public class ProdutosController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<List<Produtos>> getAll(){
+    public ResponseEntity<List<ProdutosResponseDTO>> getAll(){
         return ResponseEntity.ok(produtosService.listarProdutos());
     }
 
@@ -57,19 +59,19 @@ public class ProdutosController {
      * @return
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Produtos> getById(@PathVariable Long id){
+    public ResponseEntity<ProdutosResponseDTO> getById(@PathVariable Long id){
         return ResponseEntity.ok(produtosService.buscarProduto(id));
     }
 
     //U
     @PutMapping("/atualizar")
-    public ResponseEntity<Produtos> atualizarProduto(@RequestParam Long id,
-                                                     @RequestBody Produtos produto){
-        return ResponseEntity.ok(produtosService.atualizarProdutos(produto));
+    public ResponseEntity<ProdutosResponseDTO> atualizarProduto(@RequestParam Long id,
+                                                     @RequestBody ProdutosRequestDTO dto){
+        return ResponseEntity.ok(produtosService.atualizarProdutos(dto));
     }
 
     @PatchMapping("/atualiza-preco/{id}")
-    public ResponseEntity<Produtos> atualizarProdutoParcial(@PathVariable Long id,
+    public ResponseEntity<ProdutosResponseDTO> atualizarProdutoParcial(@PathVariable Long id,
                                                             @RequestParam BigDecimal preco) {
         return ResponseEntity.ok(produtosService.atualizarPreco(id, preco));
     }
