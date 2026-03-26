@@ -8,19 +8,18 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HistoricoProdutoDTO {
+public class HistoricoPrecoResponseDTO {
 
-    private UUID id;
+    private Long id;
     private String produto;
     private BigDecimal precoAntigo;
     private BigDecimal precoNovo;
-    private LocalDateTime dataRegistro;
+    private LocalDateTime dataAlteracao;
 
 }
