@@ -4,6 +4,7 @@ import br.com.indra.marcelo_guedes.exceptions.BusinessException;
 import br.com.indra.marcelo_guedes.exceptions.ResourceNotFoundException;
 import br.com.indra.marcelo_guedes.model.Categorias;
 import br.com.indra.marcelo_guedes.repository.CategoriasRepository;
+import br.com.indra.marcelo_guedes.repository.ProdutosRepository;
 import br.com.indra.marcelo_guedes.service.dto.CategoriasRequestDTO;
 import br.com.indra.marcelo_guedes.service.dto.CategoriasResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 public class CategoriasService {
 
     private final CategoriasRepository categoriasRepository;
+    private final ProdutosRepository produtosRepository;
 
     public CategoriasResponseDTO criarCategoria(CategoriasRequestDTO dto) {
 
@@ -26,17 +28,18 @@ public class CategoriasService {
         Categorias categoriaPai = null;
 
         if (dto.getCategoriaPaiId() != null) {
-            categoriaPai = categoriasRepository.findById(dto.getCategoriaPaiId())
+            categoriaPai = categoriasRepository.findByIdAndAtivoTrue(dto.getCategoriaPaiId())
                     .orElseThrow(() -> new ResourceNotFoundException("Categoria pai não encontrada"));
         }
 
-        if (categoriasRepository.existsByNomeAndCategoriaPai(dto.getNome(), categoriaPai)) {
+        if (categoriasRepository.existsByNomeAndCategoriaPaiAndAtivoTrue(dto.getNome(), categoriaPai)) {
             throw new BusinessException("já existe uma categoria com esse nome dentro da mesma categoria pai");
         }
 
         Categorias categoria = new Categorias();
         categoria.setNome(dto.getNome());
         categoria.setCategoriaPai(categoriaPai);
+        categoria.setAtivo(true);
 
         Categorias categoriaSalva = categoriasRepository.save(categoria);
 
@@ -44,7 +47,7 @@ public class CategoriasService {
     }
 
     public List<CategoriasResponseDTO> listarCategorias() {
-        return categoriasRepository.findAll()
+        return categoriasRepository.findByAtivoTrue()
                 .stream()
                 .map(this::toResponseDTO)
                 .toList();
@@ -52,7 +55,7 @@ public class CategoriasService {
 
     public CategoriasResponseDTO buscarCategoria(Long id) {
 
-        Categorias categoria = categoriasRepository.findById(id)
+        Categorias categoria = categoriasRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
         return toResponseDTO(categoria);
@@ -60,21 +63,25 @@ public class CategoriasService {
 
     public CategoriasResponseDTO atualizarCategoria(Long id, CategoriasRequestDTO dto) {
 
-        Categorias categoriaExistente = categoriasRepository.findById(id)
+        Categorias categoriaExistente = categoriasRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
         if (dto.getNome() == null || dto.getNome().isBlank()) {
             throw new RuntimeException("Nome da categoria é obrigatório");
         }
 
+        if (dto.getCategoriaPaiId() != null && dto.getCategoriaPaiId().equals(id)) {
+            throw new BusinessException("uma categoria não pode ser categoria pai dela mesma");
+        }
+
         Categorias categoriaPai = null;
 
         if (dto.getCategoriaPaiId() != null) {
-            categoriaPai = categoriasRepository.findById(dto.getCategoriaPaiId())
+            categoriaPai = categoriasRepository.findByIdAndAtivoTrue(dto.getCategoriaPaiId())
                     .orElseThrow(() -> new ResourceNotFoundException("Categoria pai não encontrada"));
         }
 
-        if (categoriasRepository.existsByNomeAndCategoriaPaiAndIdNot(
+        if (categoriasRepository.existsByNomeAndCategoriaPaiAndIdNotAndAtivoTrue(
                 dto.getNome(),
                 categoriaPai,
                 id
@@ -92,11 +99,19 @@ public class CategoriasService {
 
     public void deletarCategoria(Long id) {
 
-        if (categoriasRepository.existsById(id) == false) {
-            throw new ResourceNotFoundException("Categoria não encontrada");
+        Categorias categoria = categoriasRepository.findByIdAndAtivoTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+        if (categoriasRepository.existsByCategoriaPaiIdAndAtivoTrue(id)) {
+            throw new BusinessException("não é possivel inativar categoria porque existem subcategorias ativas vinculadas");
         }
 
-        categoriasRepository.deleteById(id);
+        if (produtosRepository.existsByCategoriaIdAndAtivoTrue(id)) {
+            throw new BusinessException("não é possivel inativar categoria porque existem produtos ativos vinculados a ela");
+        }
+
+        categoria.setAtivo(false);
+        categoriasRepository.save(categoria);
     }
 
     private CategoriasResponseDTO toResponseDTO(Categorias categoria){

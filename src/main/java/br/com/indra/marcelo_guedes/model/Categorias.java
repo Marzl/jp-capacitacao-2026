@@ -25,4 +25,8 @@ public class Categorias {
     @ManyToOne
     @JoinColumn(name = "categoria_pai_id")
     private Categorias categoriaPai;
+
+    @Column(name = "ativo", nullable = false);
+    private Boolean ativo = true;
+
 }
