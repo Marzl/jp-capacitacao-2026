@@ -1,6 +1,8 @@
 package br.com.indra.marcelo_guedes.controller;
 
+import br.com.indra.marcelo_guedes.service.HistoricoPrecoService;
 import br.com.indra.marcelo_guedes.service.ProdutosService;
+import br.com.indra.marcelo_guedes.service.dto.HistoricoPrecoResponseDTO;
 import br.com.indra.marcelo_guedes.service.dto.ProdutosRequestDTO;
 import br.com.indra.marcelo_guedes.service.dto.ProdutosResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +33,7 @@ import java.util.List;
 public class ProdutosController {
 
     private final ProdutosService produtosService;
+    private final HistoricoPrecoService historicoPrecoService;
 
     @Operation(description = "Endpoint para criar um novo produto",
             summary = "Criação de produto")
@@ -52,6 +55,17 @@ public class ProdutosController {
     @GetMapping
     public ResponseEntity<List<ProdutosResponseDTO>> listarProdutos(){
         return ResponseEntity.ok(produtosService.listarProdutos());
+    }
+
+    @Operation(description = "Endpoint para listar o histórico de preço de um produto pelo id",
+            summary = "Listar histórico preço")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Histórico de preço encontrado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    @GetMapping("/{id}/historico-preco")
+    public ResponseEntity<List<HistoricoPrecoResponseDTO>> listarHistoricoPreco(@PathVariable Long id) {
+        return ResponseEntity.ok(historicoPrecoService.listarHistoricoPreco(id));
     }
 
     @Operation(description = "Endpoint para buscar um produto pelo id",
