@@ -24,7 +24,7 @@ public class EstoqueService {
 
     public EstoqueResponseDTO adicionarEstoque(Long produtoId, MovimentacaoEstoqueRequestDTO dto) {
 
-        Produtos produto = produtosRepository.findById(produtoId)
+        Produtos produto = produtosRepository.findByIdAndAtivoTrue(produtoId)
                 .orElseThrow(() -> new ResourceNotFoundException("produto não encontrado"));
 
         if(dto.getQuantidade() == null || dto.getQuantidade() <= 0) {
@@ -53,7 +53,7 @@ public class EstoqueService {
 
     public EstoqueResponseDTO consultarEstoque(Long produtoId) {
 
-        Produtos produto = produtosRepository.findById(produtoId)
+        Produtos produto = produtosRepository.findByIdAndAtivoTrue(produtoId)
                 .orElseThrow(() -> new ResourceNotFoundException("produto não encontrado"));
 
         return toResponseDTO(produto);
@@ -61,7 +61,7 @@ public class EstoqueService {
 
     public List<MovimentacaoEstoqueResponseDTO> listarMovimentacoes(Long produtoId) {
 
-       produtosRepository.findById(produtoId)
+       produtosRepository.findByIdAndAtivoTrue(produtoId)
                .orElseThrow(() -> new ResourceNotFoundException("produto não encontrado"));
 
         return movimentacaoEstoqueRepository.findByProdutoId(produtoId)
@@ -72,7 +72,7 @@ public class EstoqueService {
 
     public EstoqueResponseDTO removerEstoque(Long produtoId, MovimentacaoEstoqueRequestDTO dto) {
 
-        Produtos produto = produtosRepository.findById(produtoId)
+        Produtos produto = produtosRepository.findByIdAndAtivoTrue(produtoId)
                 .orElseThrow(() -> new ResourceNotFoundException("produto não encontrado"));
 
         if(dto.getQuantidade() == null || dto.getQuantidade() <= 0) {
