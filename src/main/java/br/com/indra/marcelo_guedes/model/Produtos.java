@@ -35,7 +35,7 @@ public class Produtos {
     @Column(name="quantidade_estoque")
     private Integer quantidadeEstoque = 0;
 
-    @Column(name="estoque_minimo")
+    @Column(name="estoque_minimo", nullable = false)
     private Integer estoqueMinimo = 0;
 
     @ManyToOne(optional = false)

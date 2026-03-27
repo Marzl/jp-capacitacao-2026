@@ -38,6 +38,14 @@ public class ProdutosService {
             throw new BusinessException("o preço nao pode ser menor que 0");
         }
 
+        if (dto.getEstoqueMinimo() == null) {
+            throw new BusinessException("o estoque mínimo do produto é obrigatório");
+        }
+
+        if (dto.getEstoqueMinimo() < 0) {
+            throw new BusinessException("o estoque mínimo não pode ser negativo");
+        }
+
         Categorias categoriaId = categoriasRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria nao encontrada"));
 
@@ -46,6 +54,7 @@ public class ProdutosService {
         produto.setDescricao(dto.getDescricao());
         produto.setPreco(dto.getPreco());
         produto.setCodigoBarras(dto.getCodigoBarras());
+        produto.setEstoqueMinimo(dto.getEstoqueMinimo());
         produto.setCategoria(categoriaId);
 
         Produtos produtoSalvo = produtosRepository.save(produto);
@@ -84,6 +93,14 @@ public class ProdutosService {
             throw new BusinessException("o preço nao pode ser menor que 0");
         }
 
+        if (dto.getEstoqueMinimo() == null) {
+            throw new BusinessException("o estoque mínimo do produto é obrigatório");
+        }
+
+        if (dto.getEstoqueMinimo() < 0) {
+            throw new BusinessException("o estoque mínimo não pode ser negativo");
+        }
+
         if(dto.getCategoriaId() == null) {
             throw new BusinessException("a categoria do produto é obrigatória");
         }
@@ -95,6 +112,7 @@ public class ProdutosService {
         produtoExiste.setDescricao(dto.getDescricao());
         produtoExiste.setPreco(dto.getPreco());
         produtoExiste.setCodigoBarras(dto.getCodigoBarras());
+        produtoExiste.setEstoqueMinimo(dto.getEstoqueMinimo());
         produtoExiste.setCategoria(categoriaExiste);
 
         Produtos produtoAtualizado = produtosRepository.save(produtoExiste);
@@ -146,6 +164,7 @@ public class ProdutosService {
                 .descricao(produto.getDescricao())
                 .preco(produto.getPreco())
                 .codigoBarras(produto.getCodigoBarras())
+                .estoqueMinimo(produto.getEstoqueMinimo())
                 .categoriaId(produto.getCategoria().getId())
                 .categoriaNome(produto.getCategoria().getNome())
                 .build();
