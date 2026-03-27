@@ -79,7 +79,7 @@ public class ProdutosService {
 
     public ProdutosResponseDTO atualizarProduto(Long id, ProdutosRequestDTO dto) {
 
-        Produtos produtoExiste = produtosRepository.findById(id)
+        Produtos produtoExiste = produtosRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         if(dto.getNome() == null || dto.getNome().isBlank()){
@@ -106,7 +106,7 @@ public class ProdutosService {
             throw new BusinessException("a categoria do produto é obrigatória");
         }
 
-        Categorias categoriaExiste = categoriasRepository.findById(dto.getCategoriaId())
+        Categorias categoriaExiste = categoriasRepository.findByIdAndAtivoTrue(dto.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
         produtoExiste.setNome(dto.getNome());
