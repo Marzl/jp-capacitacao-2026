@@ -42,4 +42,6 @@ public class Produtos {
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categorias categoria;
 
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
 }

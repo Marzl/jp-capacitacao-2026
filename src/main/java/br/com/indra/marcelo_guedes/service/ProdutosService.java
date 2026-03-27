@@ -56,6 +56,7 @@ public class ProdutosService {
         produto.setCodigoBarras(dto.getCodigoBarras());
         produto.setEstoqueMinimo(dto.getEstoqueMinimo());
         produto.setCategoria(categoriaId);
+        produto.setAtivo(true);
 
         Produtos produtoSalvo = produtosRepository.save(produto);
 
@@ -63,14 +64,14 @@ public class ProdutosService {
     }
 
     public List<ProdutosResponseDTO> listarProdutos() {
-        return produtosRepository.findAll()
+        return produtosRepository.findByAtivoTrue()
                 .stream()
                 .map(this::toResponseDTO)
                 .toList();
     }
 
     public ProdutosResponseDTO buscarProduto(Long id) {
-        Produtos produtoBuscado = produtosRepository.findById(id)
+        Produtos produtoBuscado = produtosRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         return toResponseDTO(produtoBuscado);
@@ -153,7 +154,11 @@ public class ProdutosService {
     }
 
     public void deletarProduto(Long id) {
-        produtosRepository.deleteById(id);
+        Produtos produto = produtosRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+
+        produto.setAtivo(false);
+        produtosRepository.save(produto);
     }
 
     private ProdutosResponseDTO toResponseDTO(Produtos produto) {
