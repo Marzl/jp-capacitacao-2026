@@ -21,6 +21,7 @@ public class ProdutosResponseDTO {
     private String descricao;
     private BigDecimal preco;
     private String codigoBarras;
+    private Integer estoqueMinimo;
     private Long categoriaId;
     private String categoriaNome;
 

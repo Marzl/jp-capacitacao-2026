@@ -16,11 +16,13 @@ public class Categorias {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "categoria_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name= "nome", nullable = false)
     private String nome;
 
     @ManyToOne
+    @JoinColumn(name = "categoria_pai_id")
     private Categorias categoriaPai;
 }

@@ -17,6 +17,7 @@ public class ProdutosRequestDTO {
     private String descricao;
     private BigDecimal preco;
     private String codigoBarras;
+    private Integer estoqueMinimo;
     private Long categoriaId;
 
 }
