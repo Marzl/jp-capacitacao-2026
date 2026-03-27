@@ -1,6 +1,5 @@
 package br.com.indra.marcelo_guedes.service.dto;
 
-import br.com.indra.marcelo_guedes.model.Categorias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
