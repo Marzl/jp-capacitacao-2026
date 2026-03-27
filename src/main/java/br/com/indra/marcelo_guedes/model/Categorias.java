@@ -26,7 +26,7 @@ public class Categorias {
     @JoinColumn(name = "categoria_pai_id")
     private Categorias categoriaPai;
 
-    @Column(name = "ativo", nullable = false);
+    @Column(name = "ativo", nullable = false)
     private Boolean ativo = true;
 
 }
