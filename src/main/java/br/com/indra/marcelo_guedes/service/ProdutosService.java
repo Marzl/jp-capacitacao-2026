@@ -154,7 +154,7 @@ public class ProdutosService {
     }
 
     public void deletarProduto(Long id) {
-        Produtos produto = produtosRepository.findById(id)
+        Produtos produto = produtosRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         produto.setAtivo(false);
