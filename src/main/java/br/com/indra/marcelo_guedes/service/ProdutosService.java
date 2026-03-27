@@ -46,7 +46,7 @@ public class ProdutosService {
             throw new BusinessException("o estoque mínimo não pode ser negativo");
         }
 
-        Categorias categoriaId = categoriasRepository.findById(dto.getCategoriaId())
+        Categorias categoriaId = categoriasRepository.findByIdAndAtivoTrue(dto.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria nao encontrada"));
 
         Produtos produto = new Produtos();
